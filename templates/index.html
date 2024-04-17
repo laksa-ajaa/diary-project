@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta property="og:title" content="Diary Project Laksa" />
+    <meta property="og:description" content="Upload momen-momen keseharianmu!!" />
+    <meta property="og:image" content="https://media.suara.com/pictures/970x544/2023/01/12/61195-ilustrasi-menulis-buku-diary-freepikrawpixelcom.jpg" />
+    <title>Diary Project | Laksa</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous" />
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bs-custom-file-input/dist/bs-custom-file-input.js"></script>
+    <script>
+      $(document).ready(function () {
+        listing();
+        bsCustomFileInput.init();
+      });
+
+      function listing() {
+        $("#cards-box").empty();
+        $.ajax({
+          type: "GET",
+          url: "/diary?sample_give=sample-data",
+          data: {},
+          success: function (response) {
+            let article = response["article"];
+            for (let i = 0; i < article.length; i++) {
+              let title = article[i]["title"];
+              let desc = article[i]["desc"];
+              let file = article[i]["file"] || "../static/default-image.jpg";
+              let profile = article[i]["profile"];
+              let date = article[i]["date"];
+              let temp = `
+                      <div class="card mx-3 my-3 col-md-3 p-0 border-1" style="width: 18rem">
+                        <img src="../${file}" class="card-img-top" alt="..." />
+                        <div class="card-body">
+                          <img src="../${profile}" class="card-profile mb-3" />
+                            <h5 class="card-title">${title}</h5>
+                            <p class="card-text">${desc}</p>
+                            <h6 class="card-subtitle mb-2 text-muted">${date}</h6>
+                          </img>
+                        </div>
+                      </div>
+               `;
+              $("#cards-box").append(temp);
+            }
+          },
+        });
+      }
+      function posting() {
+        let title = $("#image-title").val();
+        let desc = $("#image-description").val();
+        if (title == "" || desc == "") {
+          alert("Harap isi semua kolom");
+          return;
+        }
+        let file = $("#image").prop("files")[0];
+        let profile = $("#profile").prop("files")[0];
+        let form_data = new FormData();
+
+        form_data.append("file_give", file);
+        form_data.append("profile_give", profile);
+        form_data.append("title_give", title);
+        form_data.append("desc_give", desc);
+
+        $.ajax({
+          type: "POST",
+          url: "/diary",
+          data: form_data,
+          contentType: false,
+          processData: false,
+          success: function (response) {
+            alert(response["msg"]);
+            window.location.reload();
+          },
+        });
+      }
+    </script>
+    <style>
+      body {
+        background-color: #93b6d9;
+      }
+      .card-img-top {
+        width: 100%;
+        height: 300px;
+        object-fit: cover;
+      }
+      .card-profile {
+        height: 100px;
+        object-fit: cover;
+        border-radius: 100%;
+      }
+      .upload {
+        background-color: white;
+        margin: 20px auto 0;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        width: 95%;
+        max-width: 700px;
+        padding: 20px;
+        box-shadow: 0 0 3px 0 gray;
+        border-radius: 5px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="upload p-5 mb-4 bg-light rounded-3">
+        <form action="" method="post">
+          <div class="container-fluid py-5">
+            <h1 class="display-5 fw-bold">Personal Diary</h1>
+            <p class="col-md-4 fs-7 bg-info rounded-3">Upload your photo here</p>
+            <div class="input-group mb-3 custom-file">
+              <input class="form-control" type="file" id="image" />
+            </div>
+            <p class="col-md-4 fs-7 bg-info rounded-3">Upload your profile here</p>
+            <div class="input-group mb-3 custom-file">
+              <input class="form-control" type="file" id="profile" />
+            </div>
+            <div class="mb-3">
+              <input type="text" class="form-control" id="image-title" placeholder="The title of your image" />
+            </div>
+            <div class="mb-3">
+              <textarea placeholder="The description of your image" class="form-control" id="image-description" rows="3"></textarea>
+            </div>
+            <button type="button" class="btn btn-primary" onclick="posting()">Save</button>
+          </div>
+        </form>
+      </div>
+      <div class="row justify-content-start" id="cards-box">
+        <div class="col-4">
+          <div class="card">
+            <img src="https://www.gardendesign.com/pictures/images/675x529Max/site_3/helianthus-yellow-flower-pixabay_11863.jpg" class="card-img-top" alt="..." />
+            <div class="card-body">
+              <h5 class="card-title">Card title</h5>
+              <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+              <h6 class="card-subtitle mb-2 text-muted">2022.02.15</h6>
+            </div>
+          </div>
+        </div>
+        <div class="col-4">
+          <div class="card">
+            <img src="https://www.gardendesign.com/pictures/images/675x529Max/site_3/helianthus-yellow-flower-pixabay_11863.jpg" class="card-img-top" alt="..." />
+            <div class="card-body">
+              <h5 class="card-title">Card title</h5>
+              <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+              <h6 class="card-subtitle mb-2 text-muted">2022.02.15</h6>
+            </div>
+          </div>
+        </div>
+        <div class="col-4">
+          <div class="card">
+            <img src="https://www.gardendesign.com/pictures/images/675x529Max/site_3/helianthus-yellow-flower-pixabay_11863.jpg" class="card-img-top" alt="..." />
+            <div class="card-body">
+              <h5 class="card-title">Card title</h5>
+              <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+              <h6 class="card-subtitle mb-2 text-muted">2022.02.15</h6>
+            </div>
+          </div>
+        </div>
+        <div class="col-4">
+          <div class="card">
+            <img src="https://www.gardendesign.com/pictures/images/675x529Max/site_3/helianthus-yellow-flower-pixabay_11863.jpg" class="card-img-top" alt="..." />
+            <div class="card-body">
+              <h5 class="card-title">Card title</h5>
+              <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+              <h6 class="card-subtitle mb-2 text-muted">2022.02.14</h6>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+  </body>
+</html>
